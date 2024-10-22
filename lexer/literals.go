@@ -26,6 +26,27 @@ func (l *Lexer) singleQuotedString() token.Token {
 	return l.newToken(token.SQString)
 }
 
+func (l *Lexer) doubleQuotedString() token.Token {
+	for l.peek() != '"' && l.current < len(l.input) {
+		if l.consumeNewline() {
+			continue
+		}
+		if l.peek() == '\\' {
+			l.advance()
+			if l.consumeNewline() {
+				continue
+			}
+		}
+		l.advance()
+	}
+	if l.current >= len(l.input) {
+		return l.newIllegal("unterminated string literal")
+	}
+	// consume closing double quote
+	l.advance()
+	return l.newToken(token.DQString)
+}
+
 func (l *Lexer) singleLineComment() token.Token {
 	for l.current < len(l.input) && !l.consumeNewline() {
 		if l.peek() != '?' {

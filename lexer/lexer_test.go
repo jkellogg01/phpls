@@ -108,28 +108,46 @@ func TestNextToken(t *testing.T) {
             'use \' to escape a single quote'
             '\any \other \character \can \be \escaped, \with \no \effect'
             b'binary strings should be treated as equivalent to regular strings'
-            B'and can be prefixed with a lowercase or uppercase b'
+            B'and can be prefixed with a lowercase or uppercase B'
             'single-quoted
 strings can also
-accomodate line breaks'`,
+accommodate line breaks'`,
 			[]TestToken{
 				{token.SQString, "'use \\\\ to escape a backslash'"},
 				{token.SQString, "'use \\' to escape a single quote'"},
 				{token.SQString, "'\\any \\other \\character \\can \\be \\escaped, \\with \\no \\effect'"},
 				{token.SQString, "b'binary strings should be treated as equivalent to regular strings'"},
-				{token.SQString, "B'and can be prefixed with a lowercase or uppercase b'"},
-				{token.SQString, "'single-quoted\nstrings can also\naccomodate line breaks'"},
+				{token.SQString, "B'and can be prefixed with a lowercase or uppercase B'"},
+				{token.SQString, "'single-quoted\nstrings can also\naccommodate line breaks'"},
+			},
+		},
+		{
+			"double-quoted string literals",
+			`"use \\ to escape a backslash"
+            "use \" to escape a double quote"
+            "escape sequences \$pass through the tokenizer without comment\n"
+            b"binary string should be treated as equivalent to regular strings"
+            B"and can be prefixed with a lowercase or uppercase B"
+            "double-quoted strings can
+also accommodate line breaks"`,
+			[]TestToken{
+				{token.DQString, "\"use \\\\ to escape a backslash\""},
+				{token.DQString, "\"use \\\" to escape a double quote\""},
+				{token.DQString, "\"escape sequences \\$pass through the tokenizer without comment\\n\""},
+				{token.DQString, "b\"binary string should be treated as equivalent to regular strings\""},
+				{token.DQString, "B\"and can be prefixed with a lowercase or uppercase B\""},
+				{token.DQString, "\"double-quoted strings can\nalso accommodate line breaks\""},
 			},
 		},
 		{
 			"single-line comments",
-			`// this is a comment
-# this is also a comment
-# comments can end by exiting php-world as well ?>`,
+			`// this is a single-line comment
+# this is also a single-line comment
+# single-line comments can end by exiting php-world as well?>`,
 			[]TestToken{
-				{token.Comment, "// this is a comment\n"},
-				{token.Comment, "# this is also a comment\n"},
-				{token.Comment, "# comments can end by exiting php-world as well "},
+				{token.Comment, "// this is a single-line comment\n"},
+				{token.Comment, "# this is also a single-line comment\n"},
+				{token.Comment, "# single-line comments can end by exiting php-world as well"},
 				{token.QuestionMore, "?>"},
 			},
 		},
@@ -164,12 +182,12 @@ it should be treated like whitespace.
 				idx += 1
 
 				if tok.Type != et.Type {
-					t.Errorf("wrong TokenType:\texpect %q\tgot %q",
+					t.Errorf("wrong TokenType:\nexpect\t%q\ngot   \t%q",
 						et.Type, tok.Type)
 				}
 
 				if tok.Literal != et.Literal {
-					t.Errorf("wrong Literal:\texpect %q\tgot %q",
+					t.Errorf("wrong Literal:\nexpect\t%q\ngot   \t%q",
 						et.Literal, tok.Literal)
 				}
 			}

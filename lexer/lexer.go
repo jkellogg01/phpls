@@ -29,8 +29,13 @@ func (l *Lexer) NextToken() token.Token {
 	next := l.advance()
 	switch next {
 	case 'b', 'B':
-		l.advance()
-		return l.singleQuotedString()
+		q := l.advance()
+		switch q {
+		case '\'':
+			return l.singleQuotedString()
+		case '"':
+			return l.doubleQuotedString()
+		}
 	case '[':
 		return l.newToken(token.LSquare)
 	case ']':
@@ -216,6 +221,8 @@ func (l *Lexer) NextToken() token.Token {
 		return l.newToken(token.Open)
 	case '\'':
 		return l.singleQuotedString()
+	case '"':
+		return l.doubleQuotedString()
 	case 0:
 		return l.newToken(token.EOF)
 	}
