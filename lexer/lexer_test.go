@@ -70,7 +70,7 @@ func TestNextToken(t *testing.T) {
 		},
 		{
 			"three character operators",
-			`= == === ! != !== * *= ** **= < <= << <<= > >= >> >>= <=> . ...`,
+			`= == === ! != !== * *= ** **= < <= << <<= <<< > >= >> >>= <=> . ...`,
 			[]TestToken{
 				{token.Eq, "="},
 				{token.TwoEq, "=="},

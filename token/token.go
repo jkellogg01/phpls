@@ -13,10 +13,11 @@ const (
 	EOF     = "EOF"
 
 	// identifiers & literals
-	Ident   = "IDENTIFIER"
-	Integer = "INTEGER"
-	Float   = "FLOAT"
-	String  = "STRING"
+	Ident    = "IDENTIFIER"
+	Integer  = "INTEGER"
+	Float    = "FLOAT"
+	SQString = "STRING(SQ)"
+	DQString = "STRING(DQ)"
 
 	// keywords
 	Abstract    = "abstract"
@@ -146,6 +147,7 @@ const (
 	BangTwoEq  = "!=="
 	TwoStarEq  = "**="
 	TwoLessEq  = "<<="
+	ThreeLess  = "<<<"
 	TwoMoreEq  = ">>="
 	LessEqMore = "<=>"
 	Spread     = "..."
