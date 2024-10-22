@@ -1,8 +1,6 @@
 package lexer
 
 import (
-	"fmt"
-
 	"github.com/jkellogg01/phpls/token"
 )
 
@@ -28,6 +26,9 @@ func (l *Lexer) NextToken() token.Token {
 	l.start = l.current
 	next := l.advance()
 	switch next {
+	case 'b', 'B':
+		l.advance()
+		return l.singleQuotedString()
 	case '[':
 		return l.newToken(token.LSquare)
 	case ']':
@@ -210,68 +211,9 @@ func (l *Lexer) NextToken() token.Token {
 			next = l.advance()
 		}
 		return l.newToken(token.Open)
+	case '\'':
+		return l.singleQuotedString()
 	default:
 		return l.newIllegal("invalid character")
 	}
-}
-
-func (l *Lexer) newToken(tokenType token.TokenType) token.Token {
-	return token.Token{
-		Type:    tokenType,
-		Literal: l.input[l.start:l.current],
-		Row:     l.line,
-		Col:     l.start,
-	}
-}
-
-func (l *Lexer) newIllegal(message string) token.Token {
-	return token.Token{
-		Type:    token.Illegal,
-		Literal: fmt.Sprintf("%s at %d", message, l.current),
-		Row:     l.line,
-		Col:     l.start,
-	}
-}
-
-func (l *Lexer) skipWhitespace() {
-	for (l.peek() == ' ' ||
-		l.peek() == '\t' ||
-		l.peek() == '\r' ||
-		l.peek() == '\n') &&
-		l.current < len(l.input) {
-		ws := l.advance()
-		switch ws {
-		case '\r':
-			if l.peek() == '\n' {
-				l.advance()
-			}
-			l.line++
-		case '\n':
-			l.line++
-		}
-	}
-}
-
-func (l *Lexer) check(expect byte, present, missing token.TokenType) token.Token {
-	if l.peek() != expect {
-		return l.newToken(missing)
-	}
-	l.advance()
-	return l.newToken(present)
-}
-
-func (l *Lexer) advance() byte {
-	if l.current >= len(l.input) {
-		return 0
-	}
-	result := l.input[l.current]
-	l.current += 1
-	return result
-}
-
-func (l *Lexer) peek() byte {
-	if l.current >= len(l.input) {
-		return 0
-	}
-	return l.input[l.current]
 }

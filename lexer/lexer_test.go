@@ -106,6 +106,25 @@ func TestNextToken(t *testing.T) {
 				{token.Open, "<?php"},
 			},
 		},
+		{
+			"single-quoted string literals",
+			`'use \\ to escape a backslash'
+            'use \' to escape a single quote'
+            '\any \other \character \can \be \escaped, \with \no \effect'
+            b'binary strings should be treated as equivalent to regular strings'
+            B'and can be prefixed with a lowercase or uppercase b'
+            'single-quoted
+strings can also
+accomodate line breaks'`,
+			[]TestToken{
+				{token.SQString, "'use \\\\ to escape a backslash'"},
+				{token.SQString, "'use \\' to escape a single quote'"},
+				{token.SQString, "'\\any \\other \\character \\can \\be \\escaped, \\with \\no \\effect'"},
+				{token.SQString, "b'binary strings should be treated as equivalent to regular strings'"},
+				{token.SQString, "B'and can be prefixed with a lowercase or uppercase b'"},
+				{token.SQString, "'single-quoted\nstrings can also\naccomodate line breaks'"},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -116,16 +135,18 @@ func TestNextToken(t *testing.T) {
 				tok := l.NextToken()
 
 				if tok.Type != et.Type {
-					t.Fatalf("wrong TokenType:\texpect %q\tgot %q",
+					t.Errorf("wrong TokenType:\texpect %q\tgot %q",
 						et.Type, tok.Type)
 				}
 
 				if tok.Literal != et.Literal {
-					t.Fatalf("wrong Literal:\texpect %q\tgot %q",
+					t.Errorf("wrong Literal:\texpect %q\tgot %q",
 						et.Literal, tok.Literal)
 				}
 
-				t.Logf("parsed token \"%s\" correctly", tok.Literal)
+				if !t.Failed() {
+					t.Logf("parsed token \"%s\" correctly", tok.Literal)
+				}
 			}
 		})
 	}
