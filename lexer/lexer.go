@@ -36,6 +36,8 @@ func (l *Lexer) NextToken() token.Token {
 		return l.newToken(token.LBrace)
 	case '}':
 		return l.newToken(token.RBrace)
+	case '#':
+		return l.newToken(token.Pound)
 	case '$':
 		return l.newToken(token.Dollar)
 	case '\\':
@@ -94,7 +96,19 @@ func (l *Lexer) NextToken() token.Token {
 			return l.newToken(token.Amper)
 		}
 	case '/':
-		return l.check('=', token.FSlashEq, token.FSlash)
+		switch l.peek() {
+		case '/':
+			l.advance()
+			return l.newToken(token.TwoFSlash)
+		case '*':
+			l.advance()
+			return l.newToken(token.FSlashStar)
+		case '=':
+			l.advance()
+			return l.newToken(token.FSlashEq)
+		default:
+			return l.newToken(token.FSlash)
+		}
 	case '%':
 		return l.check('=', token.PercentEq, token.Percent)
 	case '^':
@@ -123,14 +137,19 @@ func (l *Lexer) NextToken() token.Token {
 		l.advance()
 		return l.check('=', token.BangTwoEq, token.BangEq)
 	case '*':
-		if l.peek() == '=' {
+		switch l.peek() {
+		case '=':
 			l.advance()
 			return l.newToken(token.StarEq)
-		} else if l.peek() != '*' {
+		case '/':
+			l.advance()
+			return l.newToken(token.StarFSlash)
+		case '*':
+			l.advance()
+			return l.check('=', token.TwoStarEq, token.TwoStar)
+		default:
 			return l.newToken(token.Star)
 		}
-		l.advance()
-		return l.check('=', token.TwoStarEq, token.TwoStar)
 	case '>':
 		if l.peek() == '=' {
 			l.advance()
