@@ -71,7 +71,7 @@ func TestNextToken(t *testing.T) {
 		},
 		{
 			"three character operators",
-			`= == === ! != !== * *= ** **= > >= >> >>= . ...`,
+			`= == === ! != !== * *= ** **= > >= >> >>= . .= ...`,
 			[]TestToken{
 				{token.Eq, "="},
 				{token.TwoEq, "=="},
@@ -88,7 +88,8 @@ func TestNextToken(t *testing.T) {
 				{token.TwoMore, ">>"},
 				{token.TwoMoreEq, ">>="},
 				{token.Dot, "."},
-				{token.Spread, "..."},
+				{token.DotEq, ".="},
+				{token.ThreeDot, "..."},
 			},
 		},
 		{

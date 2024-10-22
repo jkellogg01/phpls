@@ -110,6 +110,52 @@ func (l *Lexer) NextToken() token.Token {
 		default:
 			return l.newToken(token.Question)
 		}
+	case '=':
+		if l.peek() != '=' {
+			return l.newToken(token.Eq)
+		}
+		l.advance()
+		return l.check('=', token.ThreeEq, token.TwoEq)
+	case '!':
+		if l.peek() != '=' {
+			return l.newToken(token.Bang)
+		}
+		l.advance()
+		return l.check('=', token.BangTwoEq, token.BangEq)
+	case '*':
+		if l.peek() == '=' {
+			l.advance()
+			return l.newToken(token.StarEq)
+		} else if l.peek() != '*' {
+			return l.newToken(token.Star)
+		}
+		l.advance()
+		return l.check('=', token.TwoStarEq, token.TwoStar)
+	case '>':
+		if l.peek() == '=' {
+			l.advance()
+			return l.newToken(token.MoreEq)
+		} else if l.peek() != '>' {
+			return l.newToken(token.More)
+		}
+		l.advance()
+		return l.check('=', token.TwoMoreEq, token.TwoMore)
+	case '.':
+		switch l.peek() {
+		case '=':
+			l.advance()
+			return l.newToken(token.DotEq)
+		case '.':
+			// the ONLY case where we need two characters of lookahead
+			if l.input[l.current+1] != '.' {
+				return l.newToken(token.Dot)
+			}
+			l.advance()
+			l.advance()
+			return l.newToken(token.ThreeDot)
+		default:
+			return l.newToken(token.Dot)
+		}
 	default:
 		return l.newIllegal("invalid character")
 	}

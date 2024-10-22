@@ -152,7 +152,7 @@ const (
 	ThreeLess  TokenType = "<<<"
 	TwoMoreEq  TokenType = ">>="
 	LessEqMore TokenType = "<=>"
-	Spread     TokenType = "..."
+	ThreeDot   TokenType = "..."
 	// NOTE: I think `??=` is missing from this
 
 	Open TokenType = "<?php"
