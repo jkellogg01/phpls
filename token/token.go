@@ -5,6 +5,12 @@ type TokenType string
 type Token struct {
 	Type    TokenType
 	Literal string
+	Row     int
+	Col     int
+}
+
+func (t Token) Len() int {
+	return len(t.Literal)
 }
 
 const (

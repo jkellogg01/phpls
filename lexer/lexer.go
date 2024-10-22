@@ -10,11 +10,15 @@ type Lexer struct {
 	input   string
 	start   int
 	current int
+	line    int
 }
 
 func New(input string) *Lexer {
 	l := &Lexer{
-		input: input,
+		input:   input,
+		start:   0,
+		current: 0,
+		line:    1,
 	}
 	return l
 }
@@ -215,6 +219,8 @@ func (l *Lexer) newToken(tokenType token.TokenType) token.Token {
 	return token.Token{
 		Type:    tokenType,
 		Literal: l.input[l.start:l.current],
+		Row:     l.line,
+		Col:     l.start,
 	}
 }
 
@@ -222,18 +228,26 @@ func (l *Lexer) newIllegal(message string) token.Token {
 	return token.Token{
 		Type:    token.Illegal,
 		Literal: fmt.Sprintf("%s at %d", message, l.current),
+		Row:     l.line,
+		Col:     l.start,
 	}
 }
 
 func (l *Lexer) skipWhitespace() {
-	// TODO: when line numbers are incorporated, this funtion will need to
-	// check them - including registering \r\n as only one line break, as if
-	// it were a single \r or \n
 	for l.peek() == ' ' ||
 		l.peek() == '\t' ||
 		l.peek() == '\r' ||
 		l.peek() == '\n' {
-		l.advance()
+		ws := l.advance()
+		switch ws {
+		case '\r':
+			if l.peek() == '\n' {
+				l.advance()
+			}
+			l.line++
+		case '\n':
+			l.line++
+		}
 	}
 }
 
