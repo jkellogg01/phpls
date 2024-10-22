@@ -43,7 +43,7 @@ func TestNextToken(t *testing.T) {
 		},
 		{
 			"two character operators",
-			`- -> -- -= + ++ += | || |= & && &= / /= % %= ^ ^= ? ??`,
+			`- -> -- -= + ++ += | || |= & && &= / /= % %= ^ ^= ? ?? ?>`,
 			[]TestToken{
 				{token.Dash, "-"},
 				{token.Arrow, "->"},
@@ -66,11 +66,12 @@ func TestNextToken(t *testing.T) {
 				{token.CaretEq, "^="},
 				{token.Question, "?"},
 				{token.TwoQuestion, "??"},
+				{token.QuestionMore, "?>"},
 			},
 		},
 		{
 			"three character operators",
-			`= == === ! != !== * *= ** **= < <= << <<= <<< > >= >> >>= <=> . ...`,
+			`= == === ! != !== * *= ** **= > >= >> >>= . ...`,
 			[]TestToken{
 				{token.Eq, "="},
 				{token.TwoEq, "=="},
@@ -82,17 +83,25 @@ func TestNextToken(t *testing.T) {
 				{token.StarEq, "*="},
 				{token.TwoStar, "**"},
 				{token.TwoStarEq, "**="},
-				{token.Less, "<"},
-				{token.LessEq, "<="},
-				{token.TwoLess, "<<"},
-				{token.TwoLessEq, "<<="},
 				{token.More, ">"},
 				{token.MoreEq, ">="},
 				{token.TwoMore, ">>"},
 				{token.TwoMoreEq, ">>="},
-				{token.LessEqMore, "<=>"},
 				{token.Dot, "."},
 				{token.Spread, "..."},
+			},
+		},
+		{
+			"many character operators",
+			`< <= << <<= <<< <=> <?= <?php`,
+			[]TestToken{
+				{token.Less, "<"},
+				{token.LessEq, "<="},
+				{token.TwoLess, "<<"},
+				{token.TwoLessEq, "<<="},
+				{token.LessEqMore, "<=>"},
+				{token.EchoOpen, "<?="},
+				{token.Open, "<?php"},
 			},
 		},
 	}
