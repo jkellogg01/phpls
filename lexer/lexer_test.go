@@ -100,6 +100,7 @@ func TestNextToken(t *testing.T) {
 				{token.LessEq, "<="},
 				{token.TwoLess, "<<"},
 				{token.TwoLessEq, "<<="},
+				{token.ThreeLess, "<<<"},
 				{token.LessEqMore, "<=>"},
 				{token.EchoOpen, "<?="},
 				{token.Open, "<?php"},
@@ -123,6 +124,8 @@ func TestNextToken(t *testing.T) {
 					t.Fatalf("wrong Literal:\texpect %q\tgot %q",
 						et.Literal, tok.Literal)
 				}
+
+				t.Logf("parsed token \"%s\" correctly", tok.Literal)
 			}
 		})
 	}

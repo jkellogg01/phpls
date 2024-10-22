@@ -146,7 +146,6 @@ func (l *Lexer) NextToken() token.Token {
 			l.advance()
 			return l.newToken(token.DotEq)
 		case '.':
-			// the ONLY case where we need two characters of lookahead
 			if l.input[l.current+1] != '.' {
 				return l.newToken(token.Dot)
 			}
@@ -156,6 +155,38 @@ func (l *Lexer) NextToken() token.Token {
 		default:
 			return l.newToken(token.Dot)
 		}
+	case '<':
+		if l.peek() == '=' {
+			l.advance()
+			return l.check('>', token.LessEqMore, token.LessEq)
+		} else if l.peek() == '<' {
+			l.advance()
+			switch l.peek() {
+			case '<':
+				l.advance()
+				return l.newToken(token.ThreeLess)
+			case '=':
+				l.advance()
+				return l.newToken(token.TwoLessEq)
+			default:
+				return l.newToken(token.TwoLess)
+			}
+		} else if l.peek() != '?' {
+			return l.newToken(token.Less)
+		}
+		l.advance()
+		next := l.advance()
+		if next == '=' {
+			return l.newToken(token.EchoOpen)
+		}
+		// <? and then something other than an equal sign
+		for _, c := range "php" {
+			if next != byte(c) {
+				return l.newIllegal("malformed opening tag")
+			}
+			next = l.advance()
+		}
+		return l.newToken(token.Open)
 	default:
 		return l.newIllegal("invalid character")
 	}
