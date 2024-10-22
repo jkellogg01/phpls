@@ -43,7 +43,7 @@ func TestNextToken(t *testing.T) {
 		},
 		{
 			"two character operators",
-			`- -> -- -= + ++ += | || |= & && &= / /= % %= ^ ^= ? ?? ?>`,
+			`- -> -- -= + ++ += | || |= & && &= / /= % %= ^ ^=`,
 			[]TestToken{
 				{token.Dash, "-"},
 				{token.Arrow, "->"},
@@ -64,14 +64,11 @@ func TestNextToken(t *testing.T) {
 				{token.PercentEq, "%="},
 				{token.Caret, "^"},
 				{token.CaretEq, "^="},
-				{token.Question, "?"},
-				{token.TwoQuestion, "??"},
-				{token.QuestionMore, "?>"},
 			},
 		},
 		{
 			"three character operators",
-			`= == === ! != !== * *= ** **= > >= >> >>= . .= ...`,
+			`= == === ! != !== * *= ** **= > >= >> >>= ? ?> ?? ??= . .= ...`,
 			[]TestToken{
 				{token.Eq, "="},
 				{token.TwoEq, "=="},
@@ -87,6 +84,10 @@ func TestNextToken(t *testing.T) {
 				{token.MoreEq, ">="},
 				{token.TwoMore, ">>"},
 				{token.TwoMoreEq, ">>="},
+				{token.Question, "?"},
+				{token.QuestionMore, "?>"},
+				{token.TwoQuestion, "??"},
+				{token.TwoQuestionEq, "??="},
 				{token.Dot, "."},
 				{token.DotEq, ".="},
 				{token.ThreeDot, "..."},

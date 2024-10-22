@@ -144,15 +144,16 @@ const (
 	QuestionMore TokenType = "?>"
 
 	// three-character operators
-	ThreeEq    TokenType = "==="
-	BangTwoEq  TokenType = "!=="
-	TwoStarEq  TokenType = "**="
-	EchoOpen   TokenType = "<?="
-	TwoLessEq  TokenType = "<<="
-	ThreeLess  TokenType = "<<<"
-	TwoMoreEq  TokenType = ">>="
-	LessEqMore TokenType = "<=>"
-	ThreeDot   TokenType = "..."
+	ThreeEq       TokenType = "==="
+	BangTwoEq     TokenType = "!=="
+	TwoStarEq     TokenType = "**="
+	EchoOpen      TokenType = "<?="
+	TwoLessEq     TokenType = "<<="
+	ThreeLess     TokenType = "<<<"
+	TwoMoreEq     TokenType = ">>="
+	LessEqMore    TokenType = "<=>"
+	TwoQuestionEq TokenType = "??="
+	ThreeDot      TokenType = "..."
 	// NOTE: I think `??=` is missing from this
 
 	Open TokenType = "<?php"
