@@ -103,7 +103,7 @@ func (l *Lexer) NextToken() token.Token {
 		switch l.peek() {
 		case '?':
 			l.advance()
-			return l.newToken(token.TwoQuestion)
+			return l.check('=', token.TwoQuestionEq, token.TwoQuestion)
 		case '>':
 			l.advance()
 			return l.newToken(token.QuestionMore)
