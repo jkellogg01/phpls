@@ -234,10 +234,11 @@ func (l *Lexer) newIllegal(message string) token.Token {
 }
 
 func (l *Lexer) skipWhitespace() {
-	for l.peek() == ' ' ||
+	for (l.peek() == ' ' ||
 		l.peek() == '\t' ||
 		l.peek() == '\r' ||
-		l.peek() == '\n' {
+		l.peek() == '\n') &&
+		l.current < len(l.input) {
 		ws := l.advance()
 		switch ws {
 		case '\r':
