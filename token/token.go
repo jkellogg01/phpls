@@ -121,7 +121,7 @@ const (
 	Arrow       = "->"
 	TwoPlus     = "++"
 	TwoDash     = "--"
-	StarTwo     = "**"
+	TwoStar     = "**"
 	TwoLess     = "<<"
 	TwoMore     = ">>"
 	LessEq      = "<="
