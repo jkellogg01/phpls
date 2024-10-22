@@ -10,36 +10,32 @@ func (l *Lexer) newToken(tokenType token.TokenType) token.Token {
 	return token.Token{
 		Type:    tokenType,
 		Literal: l.input[l.start:l.current],
-		Row:     l.line,
-		Col:     l.start,
+		Row:     l.row,
+		Col:     l.col,
 	}
 }
 
 func (l *Lexer) newIllegal(message string) token.Token {
 	return token.Token{
 		Type:    token.Illegal,
-		Literal: fmt.Sprintf("%s at %d", message, l.current),
-		Row:     l.line,
-		Col:     l.start,
+		Literal: fmt.Sprintf("%s at %d:%d", message, l.row, l.col),
+		Row:     l.row,
+		Col:     l.col,
 	}
 }
 
 func (l *Lexer) skipWhitespace() {
-	for (l.peek() == ' ' ||
+	for l.peek() == ' ' ||
 		l.peek() == '\t' ||
 		l.peek() == '\r' ||
-		l.peek() == '\n') &&
-		l.current < len(l.input) {
-		ws := l.advance()
-		switch ws {
-		case '\r':
-			if l.peek() == '\n' {
-				l.advance()
-			}
-			l.line++
-		case '\n':
-			l.line++
+		l.peek() == '\n' {
+		if l.current+1 >= len(l.input) {
+			break
 		}
+		if l.consumeNewline() {
+			continue
+		}
+		l.advance()
 	}
 }
 
@@ -55,8 +51,13 @@ func (l *Lexer) consumeNewline() bool {
 	default:
 		return false
 	}
-	l.line++
+	l.nextRow()
 	return true
+}
+
+func (l *Lexer) nextRow() {
+	l.row += 1
+	l.col = 0
 }
 
 func (l *Lexer) check(expect byte, present, missing token.TokenType) token.Token {
@@ -73,6 +74,7 @@ func (l *Lexer) advance() byte {
 	}
 	result := l.input[l.current]
 	l.current += 1
+	l.col += 1
 	return result
 }
 

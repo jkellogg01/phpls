@@ -20,7 +20,7 @@ func TestNextToken(t *testing.T) {
 	}{
 		{
 			"one character tokens",
-			`[](){}#$\:;,`,
+			`[](){}$\:;,`,
 			[]TestToken{
 				{token.LSquare, "["},
 				{token.RSquare, "]"},
@@ -28,7 +28,6 @@ func TestNextToken(t *testing.T) {
 				{token.RParen, ")"},
 				{token.LBrace, "{"},
 				{token.RBrace, "}"},
-				{token.Pound, "#"},
 				{token.Dollar, "$"},
 				{token.BSlash, "\\"},
 				{token.Colon, ":"},
@@ -40,7 +39,7 @@ func TestNextToken(t *testing.T) {
 			"two character tokens",
 			// NOTE: started adding spaces here so I don't have to worry about
 			// maximal munches when putting these in order
-			`- -> -- -= + ++ += | || |= & && &= / /= /* % %= ^ ^=`,
+			`- -> -- -= + ++ += | || |= & && &= / /= % %= ^ ^=`,
 			[]TestToken{
 				{token.Dash, "-"},
 				{token.Arrow, "->"},
@@ -57,7 +56,6 @@ func TestNextToken(t *testing.T) {
 				{token.AmperEq, "&="},
 				{token.FSlash, "/"},
 				{token.FSlashEq, "/="},
-				{token.FSlashStar, "/*"},
 				{token.Percent, "%"},
 				{token.PercentEq, "%="},
 				{token.Caret, "^"},
@@ -66,7 +64,7 @@ func TestNextToken(t *testing.T) {
 		},
 		{
 			"three character operators",
-			`= == === ! != !== * */ *= ** **= > >= >> >>= ? ?> ?? ??= . .= ...`,
+			`= == === ! != !== * *= ** **= > >= >> >>= ? ?> ?? ??= . .= ...`,
 			[]TestToken{
 				{token.Eq, "="},
 				{token.TwoEq, "=="},
@@ -75,7 +73,6 @@ func TestNextToken(t *testing.T) {
 				{token.BangEq, "!="},
 				{token.BangTwoEq, "!=="},
 				{token.Star, "*"},
-				{token.StarFSlash, "*/"},
 				{token.StarEq, "*="},
 				{token.TwoStar, "**"},
 				{token.TwoStarEq, "**="},
@@ -94,13 +91,12 @@ func TestNextToken(t *testing.T) {
 		},
 		{
 			"many character operators",
-			`< <= << <<= <<< <=> <?= <?php`,
+			`< <= << <<= <=> <?= <?php`,
 			[]TestToken{
 				{token.Less, "<"},
 				{token.LessEq, "<="},
 				{token.TwoLess, "<<"},
 				{token.TwoLessEq, "<<="},
-				{token.ThreeLess, "<<<"},
 				{token.LessEqMore, "<=>"},
 				{token.EchoOpen, "<?="},
 				{token.Open, "<?php"},
@@ -125,14 +121,47 @@ accomodate line breaks'`,
 				{token.SQString, "'single-quoted\nstrings can also\naccomodate line breaks'"},
 			},
 		},
+		{
+			"single-line comments",
+			`// this is a comment
+# this is also a comment
+# comments can end by exiting php-world as well ?>`,
+			[]TestToken{
+				{token.Comment, "// this is a comment\n"},
+				{token.Comment, "# this is also a comment\n"},
+				{token.Comment, "# comments can end by exiting php-world as well "},
+				{token.QuestionMore, "?>"},
+			},
+		},
+		{
+			"multi-line comments",
+			`/*
+a multi-line comment starts with 'fslash-star'
+and only ends with 'star-fslash'.
+
+it should be treated like whitespace.
+*/`,
+			[]TestToken{
+				{token.Comment, "/*\na multi-line comment starts with 'fslash-star'\nand only ends with 'star-fslash'.\n\nit should be treated like whitespace.\n*/"},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
 			l := New(tc.Input)
 
-			for _, et := range tc.Expect {
+			idx := 0
+			for {
 				tok := l.NextToken()
+				t.Logf("got token: %+v", tok)
+				if tok.Type == token.EOF {
+					break
+				} else if idx >= len(tc.Expect) {
+					t.Fatalf("test input produced at least %d non-EOF tokens, expect %d exactly", idx+1, len(tc.Expect))
+				}
+				et := tc.Expect[idx]
+				idx += 1
 
 				if tok.Type != et.Type {
 					t.Errorf("wrong TokenType:\texpect %q\tgot %q",
@@ -142,10 +171,6 @@ accomodate line breaks'`,
 				if tok.Literal != et.Literal {
 					t.Errorf("wrong Literal:\texpect %q\tgot %q",
 						et.Literal, tok.Literal)
-				}
-
-				if !t.Failed() {
-					t.Logf("parsed token \"%s\" correctly", tok.Literal)
 				}
 			}
 		})

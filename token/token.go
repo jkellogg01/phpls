@@ -17,6 +17,7 @@ const (
 	// utility tokens
 	Illegal TokenType = "ILLEGAL"
 	EOF     TokenType = "EOF"
+	Comment TokenType = "COMMENT"
 
 	// identifiers & literals
 	Ident    TokenType = "IDENTIFIER"
@@ -24,6 +25,8 @@ const (
 	Float    TokenType = "FLOAT"
 	SQString TokenType = "STRING(SQ)"
 	DQString TokenType = "STRING(DQ)"
+	HDString TokenType = "STRING(HD)"
+	NDString TokenType = "STRING(ND)"
 
 	// keywords
 	Abstract    TokenType = "abstract"
@@ -122,7 +125,6 @@ const (
 	Colon    TokenType = ":"
 	Semi     TokenType = ";"
 	Comma    TokenType = ","
-	Pound    TokenType = "#"
 
 	// two-character tokens
 	Arrow        TokenType = "->"
@@ -138,10 +140,7 @@ const (
 	TwoPipe      TokenType = "||"
 	TwoAmper     TokenType = "&&"
 	StarEq       TokenType = "*="
-	StarFSlash   TokenType = "*/"
 	FSlashEq     TokenType = "/="
-	TwoFSlash    TokenType = "//"
-	FSlashStar   TokenType = "/*"
 	PercentEq    TokenType = "%="
 	PlusEq       TokenType = "+="
 	DashEq       TokenType = "-="
@@ -151,6 +150,7 @@ const (
 	PipeEq       TokenType = "|="
 	TwoQuestion  TokenType = "??"
 	QuestionMore TokenType = "?>"
+	PoundLSquare TokenType = "#["
 
 	// three-character tokens
 	ThreeEq       TokenType = "==="

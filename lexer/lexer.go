@@ -8,7 +8,8 @@ type Lexer struct {
 	input   string
 	start   int
 	current int
-	line    int
+	row     int
+	col     int
 }
 
 func New(input string) *Lexer {
@@ -16,7 +17,8 @@ func New(input string) *Lexer {
 		input:   input,
 		start:   0,
 		current: 0,
-		line:    1,
+		row:     1,
+		col:     0,
 	}
 	return l
 }
@@ -42,7 +44,11 @@ func (l *Lexer) NextToken() token.Token {
 	case '}':
 		return l.newToken(token.RBrace)
 	case '#':
-		return l.newToken(token.Pound)
+		if l.peek() != '[' {
+			return l.singleLineComment()
+		}
+		l.advance()
+		l.newToken(token.PoundLSquare)
 	case '$':
 		return l.newToken(token.Dollar)
 	case '\\':
@@ -104,10 +110,10 @@ func (l *Lexer) NextToken() token.Token {
 		switch l.peek() {
 		case '/':
 			l.advance()
-			return l.newToken(token.TwoFSlash)
+			return l.singleLineComment()
 		case '*':
 			l.advance()
-			return l.newToken(token.FSlashStar)
+			return l.delimitedComment()
 		case '=':
 			l.advance()
 			return l.newToken(token.FSlashEq)
@@ -146,9 +152,6 @@ func (l *Lexer) NextToken() token.Token {
 		case '=':
 			l.advance()
 			return l.newToken(token.StarEq)
-		case '/':
-			l.advance()
-			return l.newToken(token.StarFSlash)
 		case '*':
 			l.advance()
 			return l.check('=', token.TwoStarEq, token.TwoStar)
@@ -188,7 +191,7 @@ func (l *Lexer) NextToken() token.Token {
 			switch l.peek() {
 			case '<':
 				l.advance()
-				return l.newToken(token.ThreeLess)
+				// TODO: this should delimit a HereDoc or NowDoc string
 			case '=':
 				l.advance()
 				return l.newToken(token.TwoLessEq)
@@ -213,7 +216,8 @@ func (l *Lexer) NextToken() token.Token {
 		return l.newToken(token.Open)
 	case '\'':
 		return l.singleQuotedString()
-	default:
-		return l.newIllegal("invalid character")
+	case 0:
+		return l.newToken(token.EOF)
 	}
+	return l.newIllegal("invalid character")
 }
