@@ -19,8 +19,8 @@ func TestNextToken(t *testing.T) {
 		Expect []TestToken
 	}{
 		{
-			"one character punctuators",
-			`[](){}`,
+			"one character tokens",
+			`[](){}#$\:;,`,
 			[]TestToken{
 				{token.LSquare, "["},
 				{token.RSquare, "]"},
@@ -28,12 +28,7 @@ func TestNextToken(t *testing.T) {
 				{token.RParen, ")"},
 				{token.LBrace, "{"},
 				{token.RBrace, "}"},
-			},
-		},
-		{
-			"one character operators",
-			`$\:;,`,
-			[]TestToken{
+				{token.Pound, "#"},
 				{token.Dollar, "$"},
 				{token.BSlash, "\\"},
 				{token.Colon, ":"},
@@ -42,8 +37,10 @@ func TestNextToken(t *testing.T) {
 			},
 		},
 		{
-			"two character operators",
-			`- -> -- -= + ++ += | || |= & && &= / /= % %= ^ ^=`,
+			"two character tokens",
+			// NOTE: started adding spaces here so I don't have to worry about
+			// maximal munches when putting these in order
+			`- -> -- -= + ++ += | || |= & && &= / /= /* % %= ^ ^=`,
 			[]TestToken{
 				{token.Dash, "-"},
 				{token.Arrow, "->"},
@@ -60,6 +57,7 @@ func TestNextToken(t *testing.T) {
 				{token.AmperEq, "&="},
 				{token.FSlash, "/"},
 				{token.FSlashEq, "/="},
+				{token.FSlashStar, "/*"},
 				{token.Percent, "%"},
 				{token.PercentEq, "%="},
 				{token.Caret, "^"},
@@ -68,7 +66,7 @@ func TestNextToken(t *testing.T) {
 		},
 		{
 			"three character operators",
-			`= == === ! != !== * *= ** **= > >= >> >>= ? ?> ?? ??= . .= ...`,
+			`= == === ! != !== * */ *= ** **= > >= >> >>= ? ?> ?? ??= . .= ...`,
 			[]TestToken{
 				{token.Eq, "="},
 				{token.TwoEq, "=="},
@@ -77,6 +75,7 @@ func TestNextToken(t *testing.T) {
 				{token.BangEq, "!="},
 				{token.BangTwoEq, "!=="},
 				{token.Star, "*"},
+				{token.StarFSlash, "*/"},
 				{token.StarEq, "*="},
 				{token.TwoStar, "**"},
 				{token.TwoStarEq, "**="},
