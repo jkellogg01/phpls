@@ -72,6 +72,7 @@ const (
 	Private     TokenType = "private"
 	Protected   TokenType = "protected"
 	Public      TokenType = "public"
+	Readonly    TokenType = "readonly"
 	Require     TokenType = "require"
 	RequireOnce TokenType = "require_once"
 	Return      TokenType = "return"
@@ -88,15 +89,13 @@ const (
 	Yield       TokenType = "yield"
 	YieldFrom   TokenType = "yield from"
 
-	// one-character punctuators
-	LSquare TokenType = "["
-	RSquare TokenType = "]"
-	LParen  TokenType = "("
-	RParen  TokenType = ")"
-	LBrace  TokenType = "{"
-	RBrace  TokenType = "}"
-
-	// one-character operators
+	// one-character tokens
+	LSquare  TokenType = "["
+	RSquare  TokenType = "]"
+	LParen   TokenType = "("
+	RParen   TokenType = ")"
+	LBrace   TokenType = "{"
+	RBrace   TokenType = "}"
 	Dot      TokenType = "."
 	Plus     TokenType = "+"
 	Dash     TokenType = "-"
@@ -117,8 +116,9 @@ const (
 	Colon    TokenType = ":"
 	Semi     TokenType = ";"
 	Comma    TokenType = ","
+	Pound    TokenType = "#"
 
-	// two-character operators
+	// two-character tokens
 	Arrow        TokenType = "->"
 	TwoPlus      TokenType = "++"
 	TwoDash      TokenType = "--"
@@ -132,7 +132,10 @@ const (
 	TwoPipe      TokenType = "||"
 	TwoAmper     TokenType = "&&"
 	StarEq       TokenType = "*="
+	StarFSlash   TokenType = "*/"
 	FSlashEq     TokenType = "/="
+	TwoFSlash    TokenType = "//"
+	FSlashStar   TokenType = "/*"
 	PercentEq    TokenType = "%="
 	PlusEq       TokenType = "+="
 	DashEq       TokenType = "-="
@@ -143,7 +146,7 @@ const (
 	TwoQuestion  TokenType = "??"
 	QuestionMore TokenType = "?>"
 
-	// three-character operators
+	// three-character tokens
 	ThreeEq       TokenType = "==="
 	BangTwoEq     TokenType = "!=="
 	TwoStarEq     TokenType = "**="
@@ -154,7 +157,7 @@ const (
 	LessEqMore    TokenType = "<=>"
 	TwoQuestionEq TokenType = "??="
 	ThreeDot      TokenType = "..."
-	// NOTE: I think `??=` is missing from this
 
+	// many-character tokens
 	Open TokenType = "<?php"
 )
