@@ -1,4 +1,4 @@
-package lexer
+package token
 
 type TokenType string
 
@@ -98,7 +98,7 @@ const (
 	// one-character operators
 	Dot      = "."
 	Plus     = "+"
-	Minus    = "-"
+	Dash     = "-"
 	Star     = "*"
 	Tilde    = "~"
 	Bang     = "!"
@@ -120,7 +120,7 @@ const (
 	// two-character operators
 	Arrow       = "->"
 	TwoPlus     = "++"
-	TwoMinus    = "--"
+	TwoDash     = "--"
 	StarTwo     = "**"
 	TwoLess     = "<<"
 	TwoMore     = ">>"
@@ -134,7 +134,7 @@ const (
 	FSlashEq    = "/="
 	PercentEq   = "%="
 	PlusEq      = "+="
-	MinusEq     = "-="
+	DashEq      = "-="
 	DotEq       = ".="
 	AmperEq     = "&="
 	CaretEq     = "^="
