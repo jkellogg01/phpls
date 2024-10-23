@@ -29,202 +29,182 @@ func (l *Lexer) NextToken() token.Token {
 	next := l.advance()
 	switch next {
 	case 'b', 'B':
-		q := l.advance()
-		switch q {
-		case '\'':
-			return l.singleQuotedString()
-		case '"':
-			return l.doubleQuotedString()
+		if l.match('\'') {
+			return l.singleQuoteString()
+		} else if l.match('"') {
+			return l.doubleQuoteString()
 		}
 	case '[':
-		return l.newToken(token.LSquare)
+		return l.emit(token.LSquare)
 	case ']':
-		return l.newToken(token.RSquare)
+		return l.emit(token.RSquare)
 	case '(':
-		return l.newToken(token.LParen)
+		return l.emit(token.LParen)
 	case ')':
-		return l.newToken(token.RParen)
+		return l.emit(token.RParen)
 	case '{':
-		return l.newToken(token.LBrace)
+		return l.emit(token.LBrace)
 	case '}':
-		return l.newToken(token.RBrace)
+		return l.emit(token.RBrace)
 	case '#':
-		if l.peek() != '[' {
-			return l.singleLineComment()
+		if l.match('[') {
+			return l.emit(token.PoundLSquare)
 		}
-		l.advance()
-		l.newToken(token.PoundLSquare)
+		return l.singleLineComment()
 	case '$':
-		return l.newToken(token.Dollar)
+		return l.emit(token.Dollar)
 	case '\\':
-		return l.newToken(token.BSlash)
+		return l.emit(token.BSlash)
 	case ':':
-		return l.newToken(token.Colon)
+		return l.emit(token.Colon)
 	case ';':
-		return l.newToken(token.Semi)
+		return l.emit(token.Semi)
 	case ',':
-		return l.newToken(token.Comma)
+		return l.emit(token.Comma)
 	case '-':
-		switch l.peek() {
-		case '>':
-			l.advance()
-			return l.newToken(token.Arrow)
-		case '-':
-			l.advance()
-			return l.newToken(token.TwoDash)
-		case '=':
-			l.advance()
-			return l.newToken(token.DashEq)
-		default:
-			return l.newToken(token.Dash)
+		if l.match('>') {
+			return l.emit(token.Arrow)
+		} else if l.match('-') {
+			return l.emit(token.TwoDash)
+		} else if l.match('=') {
+			return l.emit(token.DashEq)
 		}
+		return l.emit(token.Dash)
 	case '+':
-		switch l.peek() {
-		case '+':
-			l.advance()
-			return l.newToken(token.TwoPlus)
-		case '=':
-			l.advance()
-			return l.newToken(token.PlusEq)
-		default:
-			return l.newToken(token.Plus)
+		if l.match('+') {
+			return l.emit(token.TwoPlus)
+		} else if l.match('=') {
+			return l.emit(token.PlusEq)
 		}
+		return l.emit(token.Plus)
 	case '|':
-		switch l.peek() {
-		case '|':
-			l.advance()
-			return l.newToken(token.TwoPipe)
-		case '=':
-			l.advance()
-			return l.newToken(token.PipeEq)
-		default:
-			return l.newToken(token.Pipe)
+		if l.match('|') {
+			return l.emit(token.TwoPipe)
+		} else if l.match('=') {
+			return l.emit(token.PipeEq)
 		}
+		return l.emit(token.Pipe)
 	case '&':
-		switch l.peek() {
-		case '&':
-			l.advance()
-			return l.newToken(token.TwoAmper)
-		case '=':
-			l.advance()
-			return l.newToken(token.AmperEq)
-		default:
-			return l.newToken(token.Amper)
+		if l.match('&') {
+			return l.emit(token.TwoAmper)
+		} else if l.match('=') {
+			return l.emit(token.AmperEq)
 		}
+		return l.emit(token.Amper)
 	case '/':
-		switch l.peek() {
-		case '/':
-			l.advance()
+		if l.match('/') {
 			return l.singleLineComment()
-		case '*':
-			l.advance()
+		} else if l.match('*') {
 			return l.delimitedComment()
-		case '=':
-			l.advance()
-			return l.newToken(token.FSlashEq)
-		default:
-			return l.newToken(token.FSlash)
+		} else if l.match('=') {
+			return l.emit(token.FSlashEq)
 		}
+		return l.emit(token.FSlash)
 	case '%':
-		return l.check('=', token.PercentEq, token.Percent)
+		if l.match('=') {
+			return l.emit(token.PercentEq)
+		}
+		return l.emit(token.Percent)
 	case '^':
-		return l.check('=', token.CaretEq, token.Caret)
+		if l.match('=') {
+			return l.emit(token.CaretEq)
+		}
+		return l.emit(token.Caret)
 	case '?':
-		switch l.peek() {
-		case '?':
-			l.advance()
-			return l.check('=', token.TwoQuestionEq, token.TwoQuestion)
-		case '>':
-			l.advance()
-			return l.newToken(token.QuestionMore)
-		default:
-			return l.newToken(token.Question)
+		if l.match('?') {
+			if l.match('=') {
+				return l.emit(token.TwoQuestionEq)
+			}
+			return l.emit(token.TwoQuestion)
+		} else if l.match('>') {
+			return l.emit(token.QuestionMore)
 		}
+		return l.emit(token.Question)
 	case '=':
-		if l.peek() != '=' {
-			return l.newToken(token.Eq)
+		if !l.match('=') {
+			return l.emit(token.Eq)
 		}
-		l.advance()
-		return l.check('=', token.ThreeEq, token.TwoEq)
+		if l.match('=') {
+			return l.emit(token.ThreeEq)
+		}
+		return l.emit(token.TwoEq)
 	case '!':
-		if l.peek() != '=' {
-			return l.newToken(token.Bang)
+		if !l.match('=') {
+			return l.emit(token.Bang)
 		}
-		l.advance()
-		return l.check('=', token.BangTwoEq, token.BangEq)
+		if l.match('=') {
+			return l.emit(token.BangTwoEq)
+		}
+		return l.emit(token.BangEq)
 	case '*':
 		switch l.peek() {
 		case '=':
 			l.advance()
-			return l.newToken(token.StarEq)
+			return l.emit(token.StarEq)
 		case '*':
 			l.advance()
-			return l.check('=', token.TwoStarEq, token.TwoStar)
+			if l.match('=') {
+				l.emit(token.TwoStarEq)
+			}
+			l.emit(token.TwoStar)
 		default:
-			return l.newToken(token.Star)
+			return l.emit(token.Star)
 		}
 	case '>':
-		if l.peek() == '=' {
-			l.advance()
-			return l.newToken(token.MoreEq)
-		} else if l.peek() != '>' {
-			return l.newToken(token.More)
+		if l.match('=') {
+			return l.emit(token.MoreEq)
+		} else if !l.match('>') {
+			return l.emit(token.More)
 		}
-		l.advance()
-		return l.check('=', token.TwoMoreEq, token.TwoMore)
+		if l.match('=') {
+			return l.emit(token.TwoMoreEq)
+		}
+		return l.emit(token.TwoMore)
 	case '.':
-		switch l.peek() {
-		case '=':
-			l.advance()
-			return l.newToken(token.DotEq)
-		case '.':
-			if l.input[l.current+1] != '.' {
-				return l.newToken(token.Dot)
-			}
-			l.advance()
-			l.advance()
-			return l.newToken(token.ThreeDot)
-		default:
-			return l.newToken(token.Dot)
+		if l.match('=') {
+			return l.emit(token.DotEq)
+		} else if l.peek() != '.' {
+			return l.emit(token.Dot)
 		}
-	case '<':
-		if l.peek() == '=' {
-			l.advance()
-			return l.check('>', token.LessEqMore, token.LessEq)
-		} else if l.peek() == '<' {
-			l.advance()
-			switch l.peek() {
-			case '<':
-				l.advance()
-				// TODO: this should delimit a HereDoc or NowDoc string
-			case '=':
-				l.advance()
-				return l.newToken(token.TwoLessEq)
-			default:
-				return l.newToken(token.TwoLess)
-			}
-		} else if l.peek() != '?' {
-			return l.newToken(token.Less)
+		if l.peekNext() != '.' {
+			return l.emit(token.Dot)
 		}
 		l.advance()
-		next := l.advance()
-		if next == '=' {
-			return l.newToken(token.EchoOpen)
+		l.advance()
+		return l.emit(token.ThreeDot)
+	case '<':
+		if l.match('=') {
+			if l.match('>') {
+				return l.emit(token.LessEqMore)
+			}
+			return l.emit(token.LessEq)
+		} else if l.match('<') {
+			if l.match('<') {
+				// TODO: this should delimit a HereDoc or NowDoc string
+			} else if l.match('=') {
+				return l.emit(token.TwoLessEq)
+			}
+			return l.emit(token.TwoLess)
+		} else if !l.match('?') {
+			return l.emit(token.Less)
+		}
+		if l.match('=') {
+			return l.emit(token.EchoOpen)
 		}
 		// <? and then something other than an equal sign
 		for _, c := range "php" {
-			if next != byte(c) {
-				return l.newIllegal("malformed opening tag")
+			if l.match(byte(c)) {
+				continue
 			}
-			next = l.advance()
+			return l.emitIllegal("malformed opening tag")
 		}
-		return l.newToken(token.Open)
+		return l.emit(token.Open)
 	case '\'':
-		return l.singleQuotedString()
+		return l.singleQuoteString()
 	case '"':
-		return l.doubleQuotedString()
+		return l.doubleQuoteString()
 	case 0:
-		return l.newToken(token.EOF)
+		return l.emit(token.EOF)
 	}
-	return l.newIllegal("invalid character")
+	return l.emitIllegal("invalid character")
 }

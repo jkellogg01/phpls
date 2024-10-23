@@ -4,7 +4,7 @@ import (
 	"github.com/jkellogg01/phpls/token"
 )
 
-func (l *Lexer) singleQuotedString() token.Token {
+func (l *Lexer) singleQuoteString() token.Token {
 	// at this point, we have _just_ consumed the opening single quote
 	for l.peek() != '\'' && l.current < len(l.input) {
 		if l.consumeNewline() {
@@ -19,14 +19,14 @@ func (l *Lexer) singleQuotedString() token.Token {
 		l.advance()
 	}
 	if l.current >= len(l.input) {
-		return l.newIllegal("unterminated string literal")
+		return l.emitIllegal("unterminated string literal")
 	}
 	// consume closing single quote
 	l.advance()
-	return l.newToken(token.SQString)
+	return l.emit(token.SQString)
 }
 
-func (l *Lexer) doubleQuotedString() token.Token {
+func (l *Lexer) doubleQuoteString() token.Token {
 	for l.peek() != '"' && l.current < len(l.input) {
 		if l.consumeNewline() {
 			continue
@@ -40,11 +40,11 @@ func (l *Lexer) doubleQuotedString() token.Token {
 		l.advance()
 	}
 	if l.current >= len(l.input) {
-		return l.newIllegal("unterminated string literal")
+		return l.emitIllegal("unterminated string literal")
 	}
 	// consume closing double quote
 	l.advance()
-	return l.newToken(token.DQString)
+	return l.emit(token.DQString)
 }
 
 func (l *Lexer) singleLineComment() token.Token {
@@ -53,12 +53,11 @@ func (l *Lexer) singleLineComment() token.Token {
 			l.advance()
 			continue
 		}
-		if l.current+1 >= len(l.input) ||
-			l.input[l.current+1] == '>' {
+		if l.peekNext() == '>' {
 			break
 		}
 	}
-	return l.newToken(token.Comment)
+	return l.emit(token.Comment)
 }
 
 func (l *Lexer) delimitedComment() token.Token {
@@ -72,8 +71,8 @@ func (l *Lexer) delimitedComment() token.Token {
 		}
 		c = l.advance()
 		if c == '/' {
-			return l.newToken(token.Comment)
+			return l.emit(token.Comment)
 		}
 	}
-	return l.newIllegal("unterminated delimited comment")
+	return l.emitIllegal("unterminated delimited comment")
 }
