@@ -140,6 +140,26 @@ also accommodate line breaks"`,
 			},
 		},
 		{
+			"heredoc string literals",
+			`<<<EOD
+heredoc strings are delimited by
+an identifier on either side
+EOD`,
+			[]TestToken{
+				{token.HDString, "<<<EOD\nheredoc strings are delimited by\nan identifier on either side\nEOD"},
+			},
+		},
+		{
+			"nowdoc string literals",
+			`<<<'EOD'
+nowdoc strings are delimited by
+an identifier on either side
+EOD`,
+			[]TestToken{
+				{token.NDString, "<<<'EOD'\nnowdoc strings are delimited by\nan identifier on either side\nEOD"},
+			},
+		},
+		{
 			"single-line comments",
 			`// this is a single-line comment
 # this is also a single-line comment

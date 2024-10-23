@@ -137,19 +137,15 @@ func (l *Lexer) NextToken() token.Token {
 		}
 		return l.emit(token.BangEq)
 	case '*':
-		switch l.peek() {
-		case '=':
-			l.advance()
+		if l.match('=') {
 			return l.emit(token.StarEq)
-		case '*':
-			l.advance()
+		} else if l.match('*') {
 			if l.match('=') {
-				l.emit(token.TwoStarEq)
+				return l.emit(token.TwoStarEq)
 			}
-			l.emit(token.TwoStar)
-		default:
-			return l.emit(token.Star)
+			return l.emit(token.TwoStar)
 		}
+		return l.emit(token.Star)
 	case '>':
 		if l.match('=') {
 			return l.emit(token.MoreEq)
@@ -180,7 +176,10 @@ func (l *Lexer) NextToken() token.Token {
 			return l.emit(token.LessEq)
 		} else if l.match('<') {
 			if l.match('<') {
-				// TODO: this should delimit a HereDoc or NowDoc string
+				if l.match('\'') {
+					return l.nowDocString()
+				}
+				return l.hereDocString()
 			} else if l.match('=') {
 				return l.emit(token.TwoLessEq)
 			}
