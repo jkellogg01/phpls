@@ -1,1 +1,2 @@
-ate an abstract apple & drank coffee for breakfast :)
+#[Iterable]
+array of abstract apples & as oranges

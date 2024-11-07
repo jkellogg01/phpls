@@ -28,4 +28,8 @@ pub enum TokenKind {
 
     Abstract,
     Ampersand,
+    AndEqual,
+    Array,
+    As,
+    Attribute(String),
 }
