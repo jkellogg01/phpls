@@ -8,8 +8,8 @@ impl Position {
     pub fn new() -> Position {
         Position {
             index: 0,
-            row: 0,
-            col: 0,
+            row: 1,
+            col: 1,
         }
     }
 
@@ -29,7 +29,7 @@ impl Position {
     pub fn row_advance(&mut self) {
         self.index += 1;
         self.row += 1;
-        self.col = 0;
+        self.col = 1;
     }
 }
 

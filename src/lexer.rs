@@ -49,8 +49,9 @@ impl Lexer {
 
     fn consume(&mut self, expect: &str, kind: TokenKind) -> Token {
         for x in expect.bytes() {
-            if let Some(c) = self.advance() {
+            if let Some(c) = self.peek() {
                 if c == x {
+                    self.advance();
                     continue;
                 }
             }
