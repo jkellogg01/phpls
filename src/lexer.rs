@@ -34,6 +34,19 @@ impl Lexer {
         return Some(self.source[self.current.index()]);
     }
 
+    fn expect(&mut self, expect: u8) -> bool {
+        let Some(c) = self.peek() else {
+            return false;
+        };
+        match c == expect {
+            true => {
+                self.advance();
+                true
+            }
+            false => false,
+        }
+    }
+
     fn emit(&mut self, kind: TokenKind) -> Token {
         let start = self.start.coords();
         let end = self.current.coords();
