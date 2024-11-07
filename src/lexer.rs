@@ -2,7 +2,6 @@ use crate::{
     position::Position,
     token::{Token, TokenKind},
 };
-use std::fs;
 
 pub struct Lexer {
     source: Vec<u8>,
@@ -11,10 +10,9 @@ pub struct Lexer {
 }
 
 impl Lexer {
-    pub fn new(source_path: &str) -> std::io::Result<Lexer> {
-        let source_bytes = fs::read(source_path)?;
+    pub fn new(source_string: String) -> std::io::Result<Lexer> {
         return Ok(Lexer {
-            source: source_bytes,
+            source: Vec::from(source_string),
             start: Position::new(),
             current: Position::new(),
         });
