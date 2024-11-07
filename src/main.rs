@@ -1,12 +1,13 @@
-mod lexer;
+#![allow(dead_code)]
 
-use lexer::{Lexer, Token};
+mod lexer;
+mod position;
+mod token;
+
+use lexer::Lexer;
 
 fn main() {
     println!("Hello, world!");
     let l = Lexer::new("test.txt").unwrap();
     l.for_each(|c| println!("{}", c));
-
-    let t = Token::emit();
-    println!("{}", t);
 }

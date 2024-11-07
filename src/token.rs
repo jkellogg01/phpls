@@ -1,5 +1,27 @@
 use std::fmt::{Display, Formatter, Result};
 
+pub struct Token {
+    kind: TokenKind,
+    start: (usize, usize),
+    end: (usize, usize),
+}
+
+impl Token {
+    pub fn emit(kind: TokenKind, start: (usize, usize), end: (usize, usize)) -> Token {
+        Token { kind, start, end }
+    }
+}
+
+impl Display for Token {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(
+            f,
+            "{:?}, [{}:{}] - [{}:{}]",
+            self.kind, self.start.0, self.start.1, self.end.0, self.end.1
+        )
+    }
+}
+
 #[derive(Debug)]
 pub enum TokenKind {
     // utility tokens
@@ -153,30 +175,4 @@ pub enum TokenKind {
 
     // many-character tokens
     Open,
-}
-
-pub struct Token {
-    kind: TokenKind,
-    start: (usize, usize),
-    end: (usize, usize),
-}
-
-impl Token {
-    pub fn emit() -> Token {
-        Token {
-            kind: TokenKind::Illegal(String::from("test")),
-            start: (0, 0),
-            end: (0, 0),
-        }
-    }
-}
-
-impl Display for Token {
-    fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(
-            f,
-            "{:?}, [{}:{}] - [{}:{}]",
-            self.kind, self.start.0, self.start.1, self.end.0, self.end.1
-        )
-    }
 }
