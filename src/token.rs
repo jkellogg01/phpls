@@ -27,4 +27,5 @@ pub enum TokenKind {
     Illegal(String),
 
     Abstract,
+    Ampersand,
 }

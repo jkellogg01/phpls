@@ -76,6 +76,7 @@ impl Iterator for Lexer {
 
     fn next(&mut self) -> Option<Token> {
         match (self.advance(), self.peek()) {
+            (Some(b'&'), _) => Some(self.emit(TokenKind::Ampersand)),
             (Some(b'a'), _) => Some(self.consume("bstract", TokenKind::Abstract)),
             (Some(_), _) => Some(self.emit_illegal("unexpected character")),
             (None, _) => None,
