@@ -1,3 +1,4 @@
+use crate::lexer::token::Token;
 use std::fs;
 
 pub struct Lexer {
@@ -27,13 +28,9 @@ impl Lexer {
 }
 
 impl Iterator for Lexer {
-    type Item = u8;
+    type Item = Token;
 
-    fn next(&mut self) -> Option<u8> {
-        let c = self.advance();
-        if c == b'\0' {
-            return None;
-        }
-        return Some(c);
+    fn next(&mut self) -> Option<Token> {
+        None
     }
 }
