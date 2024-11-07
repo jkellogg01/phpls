@@ -16,8 +16,8 @@ impl Display for Token {
     fn fmt(&self, f: &mut Formatter) -> Result {
         write!(
             f,
-            "{:?}, [{}:{}] - [{}:{}]",
-            self.kind, self.start.0, self.start.1, self.end.0, self.end.1
+            "[{:03}:{:03}]-[{:03}:{:03}] => {:?}",
+            self.start.0, self.start.1, self.end.0, self.end.1, self.kind
         )
     }
 }
@@ -25,4 +25,6 @@ impl Display for Token {
 #[derive(Debug)]
 pub enum TokenKind {
     Illegal(String),
+
+    Abstract,
 }
