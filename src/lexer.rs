@@ -16,15 +16,21 @@ impl Iterator for Lexer {
         self.skip_whitespace();
         match (self.advance(), self.peek()) {
             (Some(b'#'), Some(b'[')) => Some(self.consume_attribute()),
+            (Some(b'&'), Some(b'&')) => Some(self.consume("&", TokenKind::BooleanAnd)),
             (Some(b'&'), Some(b'=')) => Some(self.emit(TokenKind::AndEqual)),
             (Some(b'&'), _) => Some(self.emit(TokenKind::Ampersand)),
             (Some(b'a'), Some(b'b')) => Some(self.consume("bstract", TokenKind::Abstract)),
             (Some(b'a'), Some(b'r')) => Some(self.consume("rray", TokenKind::Array)),
-            (Some(b'a'), Some(b's')) => {
-                self.advance();
-                Some(self.emit(TokenKind::As))
+            (Some(b'a'), Some(b's')) => Some(self.consume("s", TokenKind::As)),
+            (Some(b'b'), Some(b'r')) => Some(self.consume("reak", TokenKind::Break)),
+            (Some(b'|'), Some(b'|')) => Some(self.consume("|", TokenKind::BooleanOr)),
+            (Some(x), _) => {
+                if x >= 32 {
+                    Some(self.emit_illegal("unexpected character"))
+                } else {
+                    Some(self.emit(TokenKind::BadCharacter(x)))
+                }
             }
-            (Some(_), _) => Some(self.emit_illegal("unexpected character")),
             (None, _) => None,
         }
     }

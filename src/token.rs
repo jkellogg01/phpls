@@ -32,4 +32,8 @@ pub enum TokenKind {
     Array,
     As,
     Attribute(String),
+    BadCharacter(u8),
+    BooleanAnd,
+    BooleanOr,
+    Break,
 }
